@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WONWORKS — 숏폼 가격리스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #86bbef;
+    --bg-alt: #6aaae8;
+    --ink: #0d0f12;
+    --ink-soft: #3a3f4a;
+    --ink-mute: #2a5a8a;
+    --accent: #86bbef;
+    --accent-dark: #4d90d4;
+    --accent-soft: #deedf9;
+    --line: #5a9dd6;
+    --paper: #ffffff;
+    --sans: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Bebas Neue', 'Noto Sans KR', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 400; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; mix-blend-mode: overlay; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 2; }
+  header { padding: 20px 0 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+  .logo { font-family: var(--display); font-size: 28px; font-weight: 400; letter-spacing: 0.06em; }
+  .logo .dot { color: var(--accent-dark); }
+  .nav-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); display: flex; gap: 24px; }
+  .nav-meta span { display: flex; align-items: center; gap: 6px; }
+  .nav-meta .dot-live { width: 6px; height: 6px; background: var(--accent-dark); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .hero { padding: 48px 0 36px; border-bottom: 1px solid var(--line); position: relative; }
+  .hero-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .hero-label::before { content: ''; width: 32px; height: 1px; background: var(--accent-dark); }
+  .hero h1 { font-family: var(--display); font-size: clamp(52px, 7vw, 96px); font-weight: 400; line-height: 0.92; letter-spacing: 0.04em; margin-bottom: 20px; color: var(--ink); }
+  .hero h1 em { font-style: normal; color: var(--accent-dark); }
+  .hero h1 .hero-sub { font-size: 0.31em; color: var(--ink-soft); letter-spacing: 0.04em; font-weight: 400; display: block; margin-top: 8px; }
+  .hero p { font-family: var(--sans); font-size: 15px; font-weight: 300; line-height: 1.7; max-width: 600px; color: var(--ink-soft); }
+  .hero-decoration { position: absolute; right: 40px; top: 48px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--ink-mute); text-align: right; line-height: 1.8; }
+  .layout { display: grid; grid-template-columns: 1fr 420px; gap: 60px; padding: 36px 0 48px; }
+  .options-panel { min-width: 0; }
+  /* 탭 */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+  .tab { flex: 1; padding: 20px 24px; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; color: var(--ink-mute); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; text-align: center; display: flex; align-items: baseline; justify-content: center; gap: 12px; }
+  .tab .tab-num { font-family: var(--mono); font-size: 10px; font-weight: 400; letter-spacing: 0.1em; color: var(--ink-mute); }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); }
+  .tab.active .tab-num { color: var(--accent-dark); }
+  .tab::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--accent-dark); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .tab.active::after { width: 100%; }
+  /* 카테고리 */
+  .category-group { margin-bottom: 40px; }
+  .category-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
+  .category-header .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--ink-mute); }
+  .category-header h2 { font-family: var(--sans); font-size: 18px; font-weight: 700; letter-spacing: 0.02em; flex: 1; }
+  .category-header .count { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.05em; }
+  .category-footnote { margin-top: 16px; padding: 12px 16px; background: var(--accent-soft); border-left: 3px solid var(--accent-dark); font-size: 12px; color: var(--ink-soft); font-weight: 400; letter-spacing: -0.01em; line-height: 1.7; }
+  .category-footnote div { padding: 1px 0; }
+  .category-notice { padding: 20px 24px; background: var(--ink); color: var(--paper); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .category-notice .notice-text { font-family: var(--sans); font-size: 14px; font-weight: 500; line-height: 1.6; color: rgba(255,255,255,0.9); }
+  .category-notice .notice-text strong { color: #ffffff; display: block; font-size: 15px; margin-bottom: 4px; }
+  .category-notice .notice-price { font-family: var(--display); font-size: 42px; color: var(--accent); letter-spacing: 0.04em; white-space: nowrap; line-height: 1; }
+  .category-notice .notice-price span { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.5); display: block; text-align: right; margin-top: 4px; letter-spacing: 0.1em; }
+  /* 아이템 */
+  .item-row { display: grid; grid-template-columns: 1fr auto; gap: 32px; padding: 16px 0; border-bottom: 1px solid var(--line); transition: background 0.2s; align-items: center; }
+  .item-row:hover { background: rgba(134, 187, 239, 0.06); }
+  .item-info { min-width: 0; }
+  .item-name { font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .item-start-price { font-family: var(--display); font-size: 40px; font-weight: 400; color: var(--ink); letter-spacing: 0.02em; line-height: 1; }
+  .item-desc { font-size: 12px; color: var(--ink-soft); margin-bottom: 6px; }
+  .item-note { font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--ink-mute); text-transform: uppercase; }
+  /* 티어 버튼 */
+  .tier-controls { display: flex; gap: 8px; align-items: center; }
+  .tier-btn { background: var(--paper); border: 1px solid var(--line); padding: 12px 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; cursor: pointer; text-align: left; transition: all 0.2s; min-width: 140px; position: relative; display: flex; flex-direction: column; }
+  .tier-btn:hover { border-color: var(--accent-dark); }
+  .tier-btn.selected { background: var(--accent); color: var(--ink); border-color: var(--accent-dark); }
+  .tier-btn .tier-label { display: block; text-transform: uppercase; font-size: 9px; opacity: 0.6; margin-bottom: 3px; }
+  .tier-btn .tier-price { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .tier-btn .tier-details { font-family: var(--sans); font-size: 10px; line-height: 1.5; font-weight: 400; letter-spacing: 0; opacity: 0.75; margin-top: 4px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.15); }
+  .tier-btn.selected .tier-details { border-top-color: rgba(0,0,0,0.12); }
+  .tier-btn .tier-details div { display: flex; align-items: flex-start; gap: 4px; padding: 1px 0; }
+  .tier-btn .tier-details div::before { content: '·'; flex-shrink: 0; }
+  .tier-btn .tier-details div.required { font-weight: 600; color: var(--accent-dark); opacity: 1; }
+  .tier-btn .tier-details div.required::before { content: '★'; color: var(--accent-dark); }
+  .tier-btn.selected .tier-details div.required { color: #1a4a6e; }
+  .tier-btn.selected .tier-details div.required::before { color: #1a4a6e; }
+  /* 수량 컨트롤 */
+  .qty-control { display: flex; align-items: center; border: 1px solid var(--line); background: var(--paper); margin-left: 12px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .item-row.has-selection .qty-control { opacity: 1; pointer-events: auto; }
+  .qty-btn { background: none; border: none; width: 32px; height: 32px; cursor: pointer; font-family: var(--mono); font-size: 14px; color: var(--ink); transition: background 0.15s; }
+  .qty-btn:hover { background: var(--accent-soft); }
+  .qty-value { font-family: var(--mono); font-size: 12px; min-width: 28px; text-align: center; font-weight: 500; }
+  /* 컷 수 설정 */
+  .item-cut-option { grid-column: 1 / -1; margin-top: -4px; padding: 14px 16px; background: var(--accent-soft); border-left: 3px solid var(--accent-dark); display: none; align-items: center; gap: 16px; flex-wrap: wrap; animation: slideIn 0.3s ease-out; }
+  .item-row.has-selection .item-cut-option { display: flex; }
+  .cut-option-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-dark); font-weight: 700; }
+  .cut-control { display: flex; align-items: center; background: var(--paper); border: 1px solid var(--line); }
+  .cut-btn { background: none; border: none; width: 36px; height: 36px; cursor: pointer; font-family: var(--mono); font-size: 16px; color: var(--ink); transition: background 0.15s; font-weight: 600; }
+  .cut-btn:hover { background: var(--accent-soft); }
+  .cut-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .cut-value { font-family: var(--mono); font-size: 14px; font-weight: 600; min-width: 56px; text-align: center; padding: 0 4px; color: var(--ink); }
+  .cut-summary { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-left: auto; }
+  .cut-summary strong { color: var(--accent-dark); font-size: 13px; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+  /* 우측 화이트 패널 */
+  .summary-panel { position: sticky; top: 20px; align-self: start; background: var(--paper); color: var(--ink); padding: 32px; height: fit-content; max-height: calc(100vh - 40px); display: flex; flex-direction: column; }
+  .summary-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .summary-label::before { content: '●'; color: var(--accent-dark); animation: pulse 2s ease-in-out infinite; }
+  .summary-title { font-family: var(--sans); font-size: 18px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 20px; line-height: 1.2; color: var(--ink); }
+  .summary-items { flex: 1; overflow-y: auto; margin: 0 -8px; padding: 0 8px 24px; border-bottom: 1px dashed var(--line); margin-bottom: 24px; min-height: 100px; }
+  .summary-items::-webkit-scrollbar { width: 4px; }
+  .summary-items::-webkit-scrollbar-track { background: transparent; }
+  .summary-items::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+  .empty-state { font-family: var(--sans); font-weight: 300; color: var(--ink-mute); text-align: center; padding: 40px 0; font-size: 13px; line-height: 1.6; }
+  .empty-state::before { content: '↓'; display: block; font-size: 24px; margin-bottom: 12px; color: var(--accent-dark); }
+  .summary-item { padding: 16px 0; border-bottom: 1px solid var(--line); animation: slideIn 0.3s ease-out; }
+  .summary-item-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .summary-item-info { flex: 1; min-width: 0; }
+  .summary-item-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--ink); }
+  .summary-item-meta { font-family: var(--mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.05em; text-transform: uppercase; }
+  .summary-item-price { font-family: var(--mono); font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; color: var(--ink-soft); }
+  .summary-row.urgent { color: var(--accent-dark); }
+  .summary-row .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .summary-row .value { font-family: var(--mono); font-size: 13px; }
+  .summary-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; border-top: 2px solid var(--accent-dark); margin-top: 8px; }
+  .summary-total .label { font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+  .summary-total .value { font-family: var(--display); font-size: 44px; font-weight: 400; color: var(--accent-dark); letter-spacing: 0.02em; }
+  .summary-total .unit { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); margin-left: 4px; }
+  .vat-note { font-family: var(--mono); font-size: 9px; color: var(--ink-mute); text-align: right; margin-top: 4px; letter-spacing: 0.05em; }
+  .options-extra { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--line); }
+  .option-toggle { display: flex; align-items: center; gap: 12px; padding: 10px 0; cursor: pointer; font-size: 12px; color: var(--ink-soft); }
+  .option-toggle input { appearance: none; width: 16px; height: 16px; border: 1px solid var(--line); cursor: pointer; position: relative; flex-shrink: 0; }
+  .option-toggle input:checked { background: var(--accent); border-color: var(--accent-dark); }
+  .option-toggle input:checked::after { content: '✓'; position: absolute; inset: 0; color: var(--ink); font-size: 11px; display: flex; align-items: center; justify-content: center; }
+  .option-toggle .text { flex: 1; }
+  .option-toggle .amount { font-family: var(--mono); font-size: 11px; color: var(--accent-dark); }
+  .cta-btn { margin-top: 24px; width: 100%; padding: 18px; background: var(--accent); color: var(--ink); border: none; font-family: var(--sans); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .cta-btn:hover { background: var(--accent-dark); color: white; }
+  .cta-btn::after { content: '→'; transition: transform 0.2s; }
+  .cta-btn:hover::after { transform: translateX(4px); }
+  footer { padding: 24px 0 40px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); }
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 14px 28px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 999; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; gap: 32px; }
+    .summary-panel { position: static; max-height: none; }
+    .hero-decoration { display: none; }
+    .container { padding: 0 20px; }
+    .item-row { grid-template-columns: 1fr; gap: 12px; }
+    .tier-controls { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">WONWORKS<span class="dot">.</span></div>
+    <div class="nav-meta">
+      <span><span class="dot-live"></span>LIVE QUOTE</span>
+      <span>EST. 2018</span>
+      <span>SEOUL</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-label">Short-form Price List — V.2026</div>
+    <h1>올릴 고민, 이제 그만!<br><span class="hero-sub">콘텐츠부터 운영까지, 원웍스.</span></h1>
+    <p>필요한 컨텐츠를 선택하고 필요한 만큼 옵션을 더해보세요. 추가 옵션까지 포함한 견적이 실시간으로 계산됩니다.</p>
+    <div class="hero-decoration">EST → 00<br>LAT 37.5665° N<br>LNG 126.9780° E<br>VER 2026.06</div>
+  </section>
+
+  <div class="layout">
+    <div>
+      <div class="tabs">
+        <button class="tab active" data-tab="shortform"><span class="tab-num">01 /</span>숏폼 영상제작</button>
+        <button class="tab" data-tab="sns"><span class="tab-num">02 /</span>SNS 월간운영패키지</button>
+      </div>
+      <div class="options-panel" id="options-panel"></div>
+    </div>
+
+    <aside class="summary-panel">
+      <div class="summary-label">Your Estimate</div>
+      <div class="summary-title">실시간 견적서</div>
+      <div class="summary-items" id="summary-items">
+        <div class="empty-state">왼쪽에서 영상 길이를 선택하시면<br>견적이 자동으로 계산됩니다</div>
+      </div>
+      <div id="summary-calc" style="display:none;">
+        <div class="summary-row"><span class="label">Subtotal</span><span class="value" id="subtotal">0원</span></div>
+        <div class="summary-row urgent" id="urgent-row" style="display:none;"><span class="label">긴급 할증 (+50%)</span><span class="value" id="urgent-amt">0원</span></div>
+        <div class="summary-row"><span class="label">VAT (10%)</span><span class="value" id="vat">0원</span></div>
+      </div>
+      <div class="options-extra">
+        <label class="option-toggle">
+          <input type="checkbox" id="urgent-check">
+          <span class="text">긴급 진행 (48시간 내 납품)</span>
+          <span class="amount">+50%</span>
+        </label>
+      </div>
+      <div class="summary-total">
+        <span class="label">Total</span>
+        <span><span class="value" id="total">0</span><span class="unit">KRW</span></span>
+      </div>
+      <div class="vat-note">부가세(VAT 10%) 별도 · 실견적시 협의 가능</div>
+      <button class="cta-btn" onclick="copyQuote()">견적 내용 복사하기</button>
+    </aside>
+  </div>
+
+  <footer>
+    <span>© 301works 2026 — All quotes are estimates</span>
+    <span>SHIN91965449@GMAIL.COM</span>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const CUT_PRICE = 50000;
+
+  const data = [
+    { cat: '숏폼 영상 제작 · Short-form', tab: 'shortform', footnote: [
+        '모든 영상 작업은 래퍼런스(참고 영상) 제공이 필수입니다.',
+        '의뢰인이 기획 제공: 발주자가 기획안 · 콘티를 제공하는 경우의 단가입니다. / 기획 포함: 기획 · 콘티 작성까지 대행하는 단가입니다.',
+        '기본 단가에는 편집 · 기본 자막(로고&제품명) · BGM 1곡 · 수정 2회가 포함됩니다.',
+        '납품 사이즈 : 1080 × 1920px (9:16) · 파일 형식 : MP4',
+        '촬영이 필요한 경우 촬영비는 별도 협의하며, 소스 영상 · 이미지는 발주자 제공이 원칙입니다.',
+        '원본 프로젝트 파일 제공은 별도 협의 사항입니다.'
+      ], items: [
+        { id: 'v10', name: '숏폼 10초 영상', desc: '릴스 · 쇼츠 · 틱톡 등 SNS 숏폼<br>영상 클립 4개 편집<br>납품 사이즈 : 1080 × 1920px (9:16) · 파일 형식 : MP4', note: '', baseCuts: 4,
+          tiers: [200000, 300000], tierLabels: ['의뢰인이 기획 제공', '기획 포함'],
+          tierDetails: [
+            ['래퍼런스 필수', '발주자 기획안 · 콘티 제공 필수', '영상 클립 4개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회'],
+            ['래퍼런스 필수', '기획 · 콘티 작성 포함', '영상 클립 4개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회']
+          ] },
+        { id: 'v15', name: '숏폼 15초 영상', desc: '릴스 · 쇼츠 · 틱톡 등 SNS 숏폼<br>영상 클립 5개 편집<br>납품 사이즈 : 1080 × 1920px (9:16) · 파일 형식 : MP4', note: '', baseCuts: 5,
+          tiers: [250000, 350000], tierLabels: ['의뢰인이 기획 제공', '기획 포함'],
+          tierDetails: [
+            ['래퍼런스 필수', '발주자 기획안 · 콘티 제공 필수', '영상 클립 4개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회'],
+            ['래퍼런스 필수', '기획 · 콘티 작성 포함', '영상 클립 4개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회']
+          ] },
+        { id: 'v20', name: '숏폼 20초 영상', desc: '릴스 · 쇼츠 · 틱톡 등 SNS 숏폼<br>영상 클립 6개 편집<br>납품 사이즈 : 1080 × 1920px (9:16) · 파일 형식 : MP4', note: '', baseCuts: 6,
+          tiers: [300000, 400000], tierLabels: ['의뢰인이 기획 제공', '기획 포함'],
+          tierDetails: [
+            ['래퍼런스 필수', '발주자 기획안 · 콘티 제공 필수', '영상 클립 6개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회'],
+            ['래퍼런스 필수', '기획 · 콘티 작성 포함', '영상 클립 6개 포함', '기본 자막(로고&제품명) · BGM 1곡 · 수정 2회']
+          ] },
+      ]},
+    { cat: 'SNS 마케팅 · Social Marketing', tab: 'sns',
+      notice: '단순 파일 업로드 대행이 아닙니다. 이미지 디자인 · 영상 제작 · 카피라이팅까지, 브랜드 SNS 콘텐츠를 원웍스가 직접 제작하고 운영합니다.',
+      footnote: [
+        '본 패키지는 최소 3개월 이상의 계약을 기준으로 운영됩니다. 단기 계약은 별도 협의가 필요합니다.',
+        '월간 패키지는 매월 1일 기준으로 운영되며, 중도 해지 시 잔여 금액은 환불되지 않습니다.',
+        '브랜드 톤앤매너 유지 · 제품 디자인 일관성 유지를 원칙으로 콘텐츠를 제작합니다. 브랜드 가이드라인 또는 레퍼런스 자료 제공 시 더욱 정확하게 반영됩니다.',
+        '캡션 · 해시태그 작성은 브랜드 톤앤매너 자료 제공 시 더욱 정확하게 진행됩니다.',
+        '예약 발행은 Meta Business Suite를 통해 진행됩니다.'
+      ], items: [
+        { id: 'ig2a', name: '월간 운영 패키지 (이미지)', startPrice: '월 25만원~', price: 250000, selectLabel: '월 25만원 · 시작가 기준', desc: '월 9회 단일이미지 업로드 · 캡션 · 해시태그 관리', note: '3×3 그리드 피드 운영 · 월 단위 계약 · 피드 · 스토리 포함' },
+        { id: 'ig2b', name: '월간 운영 패키지 (이미지+릴스)', startPrice: '월 75만원~', price: 750000, selectLabel: '월 75만원 · 시작가 기준', desc: '월 9회 · 단일 이미지 피드 6건 + 10초 릴스 3건 업로드 · 캡션 · 해시태그 관리', note: '3×3 그리드 피드 운영 · 월 단위 계약 · 피드 · 릴스 · 스토리 포함' },
+      ]},
+    { cat: '추가 옵션 · Add-ons', tab: 'sns', footnote: [
+        '추가 옵션은 월간 운영 패키지와 함께 구매 시 적용됩니다.',
+        '업로드 건수는 월 단위로 합산되며, 미사용 건은 이월되지 않습니다.'
+      ], items: [
+        { id: 'sns_o1', name: '이미지 피드 업로드 추가', desc: '단일 이미지 피드 1건 추가 업로드 · 캡션 · 해시태그 포함', note: '1건 단위 · 수량 추가 가능', price: 30000, qty: true },
+        { id: 'sns_o2', name: '릴스 업로드 추가', desc: '숏폼 릴스 1건 추가 업로드 · 캡션 · 해시태그 포함', note: '1건 단위 · 수량 추가 가능', price: 200000, qty: true },
+      ]},
+    { cat: '추가 옵션 · Add-ons', tab: 'shortform', footnote: [
+        '비율 추가 버전은 선택한 영상 금액(컷 포함)의 30%로 계산됩니다.',
+        '유료 음원 · 폰트 라이선스 비용은 실비로 별도 청구됩니다.'
+      ], items: [
+        { id: 'o0', name: '영상 클립 추가', desc: '기본 클립 수 초과 시 클립당 추가 금액', note: '1클립 단위', price: 50000, qty: true },
+        { id: 'o1', name: '자막 디자인 (스타일 자막)', desc: '키네틱 · 예능형 스타일 자막', note: '1건 단위 · 분량에 따라 협의', price: 30000, qty: true },
+        { id: 'o2', name: '모션그래픽 / 인포그래픽 삽입', desc: '로고 모션 · 그래프 · 도식 애니메이션', note: '1컷 단위 · 난이도에 따라 협의', price: 50000, qty: true },
+        { id: 'o3', name: 'BGM · 효과음 별도 선곡', desc: '무드에 맞는 음원 큐레이션', note: '1건 단위 · 유료 음원 실비 별도', price: 20000 },
+        { id: 'o4', name: '비율 추가 버전 (9:16 ↔ 16:9)', desc: '동일 콘텐츠의 가로 / 세로 변환 버전', note: '영상 금액의 30%', ratio: 0.3 },
+        { id: 'o5', name: '추가 수정 (기본 2회 초과 시)', desc: '컷 교체 · 자막 · 음원 변경 등', note: '1회 단위', price: 30000, qty: true },
+      ]},
+  ];
+
+  const selections = {};
+  let currentTab = 'shortform';
+
+  const fmt = n => Math.round(n).toLocaleString('ko-KR') + '원';
+
+  const basePrice = (item, sel) => item.tiers ? item.tiers[sel?.tier || 0] : item.price;
+
+  function videoSubtotal() {
+    let sum = 0;
+    data[0].items.forEach(item => {
+      const sel = selections[item.id];
+      if (sel) sum += basePrice(item, sel) + (sel.extraCuts || 0) * CUT_PRICE;
+    });
+    return sum;
+  }
+
+  function renderOptions() {
+    const panel = document.getElementById('options-panel');
+    panel.innerHTML = data.filter(cat => cat.tab === currentTab).map((cat, ci) => {
+      const num = String(ci + 1).padStart(2, '0');
+      const itemsHtml = cat.items.map(item => {
+        const sel = selections[item.id];
+        const hasSel = sel !== undefined;
+        const isVideo = item.baseCuts !== undefined;
+
+        let tierBtn;
+        if (item.tiers) {
+          tierBtn = item.tiers.map((price, ti) => {
+            const isSelected = sel?.tier === ti;
+            const details = item.tierDetails?.[ti];
+            const detailsHtml = details
+              ? `<div class="tier-details">${details.map(d => `<div${/필수/.test(d) ? ' class="required"' : ''}>${d}</div>`).join('')}</div>` : '';
+            return `<button class="tier-btn ${isSelected ? 'selected' : ''}" data-select="${item.id}" data-tier="${ti}">
+              <span class="tier-label">${item.tierLabels[ti]}</span>
+              <span class="tier-price">${fmt(price)}</span>${detailsHtml}</button>`;
+          }).join('');
+        } else if (!item.price && !item.ratio) {
+          tierBtn = null;
+        } else {
+          const priceLabel = item.ratio ? '영상 금액 × 30%' : fmt(item.price);
+          const detailsHtml = item.details
+            ? `<div class="tier-details">${item.details.map(d => `<div>${d}</div>`).join('')}</div>` : '';
+          tierBtn = `<button class="tier-btn ${hasSel ? 'selected' : ''}" data-select="${item.id}">
+              <span class="tier-label">${item.selectLabel || 'SELECT'}</span>
+              <span class="tier-price">${priceLabel}</span>${detailsHtml}</button>`;
+        }
+
+        const qtyControl = item.qty ? `<div class="qty-control">
+            <button class="qty-btn" data-qty="-1" data-item="${item.id}">−</button>
+            <span class="qty-value">${sel?.qty || 1}</span>
+            <button class="qty-btn" data-qty="1" data-item="${item.id}">+</button>
+          </div>` : '';
+
+        let cutHtml = '';
+        if (isVideo) {
+          const extra = sel?.extraCuts || 0;
+          const totalCuts = item.baseCuts + extra;
+          const bp = basePrice(item, sel);
+          cutHtml = `<div class="item-cut-option">
+            <span class="cut-option-label">컷 수 설정</span>
+            <div class="cut-control">
+              <button class="cut-btn" data-cut="-1" data-item="${item.id}" ${extra <= 0 ? 'disabled' : ''}>−</button>
+              <span class="cut-value">${totalCuts}컷</span>
+              <button class="cut-btn" data-cut="1" data-item="${item.id}">+</button>
+            </div>
+            <span class="cut-summary">기본 ${item.baseCuts}컷 + 추가 ${extra}컷 (+${fmt(extra * CUT_PRICE)}) = <strong>${fmt(bp + extra * CUT_PRICE)}</strong></span>
+          </div>`;
+        }
+
+        return `<div class="item-row ${hasSel ? 'has-selection' : ''}">
+          <div class="item-info">
+            <div class="item-name">${item.name}${item.startPrice ? `<span class="item-start-price">${item.startPrice}</span>` : ''}</div>
+            <div class="item-desc">${item.desc}</div>
+            <div class="item-note">${item.note}</div>
+          </div>
+          ${tierBtn ? `<div class="tier-controls">${tierBtn}${qtyControl}</div>` : ''}
+          ${cutHtml}
+        </div>`;
+      }).join('');
+
+      const notice = cat.notice
+        ? `<div class="category-notice">
+            <div class="notice-text"><strong>직접 제작 · 직접 운영</strong>${cat.notice}</div>
+          </div>` : '';
+
+      const footnote = cat.footnote
+        ? `<div class="category-footnote">${cat.footnote.map(f => `<div>※ ${f}</div>`).join('')}</div>` : '';
+
+      return `<div class="category-group">
+        <div class="category-header">
+          <span class="num">${num} /</span>
+          <h2>${cat.cat}</h2>
+          <span class="count">${cat.items.length} ITEMS</span>
+        </div>
+        ${notice}${itemsHtml}${footnote}
+      </div>`;
+    }).join('');
+  }
+
+  function renderSummary() {
+    const box = document.getElementById('summary-items');
+    const calc = document.getElementById('summary-calc');
+    const lines = [];
+
+    data.forEach(cat => cat.items.forEach(item => {
+      const sel = selections[item.id];
+      if (!sel) return;
+      let price, meta;
+      if (item.baseCuts !== undefined) {
+        const extra = sel.extraCuts || 0;
+        price = basePrice(item, sel) + extra * CUT_PRICE;
+        meta = `${item.tierLabels[sel.tier || 0]} · 총 ${item.baseCuts + extra}컷` + (extra > 0 ? ` (기본 ${item.baseCuts} + 추가 ${extra})` : '');
+      } else if (item.ratio) {
+        price = videoSubtotal() * item.ratio;
+        meta = '영상 금액 × 30%';
+      } else {
+        const q = sel.qty || 1;
+        price = item.price * q;
+        meta = `${fmt(item.price)} × ${q}`;
+      }
+      lines.push({ name: item.name, meta, price });
+    }));
+
+    if (lines.length === 0) {
+      box.innerHTML = `<div class="empty-state">왼쪽에서 영상 길이를 선택하시면<br>견적이 자동으로 계산됩니다</div>`;
+      calc.style.display = 'none';
+      document.getElementById('total').textContent = '0';
+      return;
+    }
+
+    box.innerHTML = lines.map(l => `<div class="summary-item">
+      <div class="summary-item-row">
+        <div class="summary-item-info">
+          <div class="summary-item-name">${l.name}</div>
+          <div class="summary-item-meta">${l.meta}</div>
+        </div>
+        <div class="summary-item-price">${fmt(l.price)}</div>
+      </div>
+    </div>`).join('');
+
+    const subtotal = lines.reduce((s, l) => s + l.price, 0);
+    const urgent = document.getElementById('urgent-check').checked;
+    const urgentAmt = urgent ? subtotal * 0.5 : 0;
+    const vat = (subtotal + urgentAmt) * 0.1;
+    const total = subtotal + urgentAmt + vat;
+
+    calc.style.display = 'block';
+    document.getElementById('subtotal').textContent = fmt(subtotal);
+    document.getElementById('urgent-row').style.display = urgent ? 'flex' : 'none';
+    document.getElementById('urgent-amt').textContent = '+' + fmt(urgentAmt);
+    document.getElementById('vat').textContent = fmt(vat);
+    document.getElementById('total').textContent = Math.round(total).toLocaleString('ko-KR');
+  }
+
+  document.getElementById('options-panel').addEventListener('click', e => {
+    const selBtn = e.target.closest('[data-select]');
+    const cutBtn = e.target.closest('[data-cut]');
+    const qtyBtn = e.target.closest('[data-qty]');
+
+    if (selBtn) {
+      const id = selBtn.dataset.select;
+      const tier = selBtn.dataset.tier !== undefined ? Number(selBtn.dataset.tier) : null;
+      if (tier !== null) {
+        if (selections[id]?.tier === tier) delete selections[id];
+        else selections[id] = { tier, extraCuts: selections[id]?.extraCuts || 0, qty: 1 };
+      } else {
+        if (selections[id]) delete selections[id];
+        else selections[id] = { extraCuts: 0, qty: 1 };
+      }
+    } else if (cutBtn) {
+      const id = cutBtn.dataset.item;
+      const sel = selections[id];
+      if (sel) sel.extraCuts = Math.max(0, (sel.extraCuts || 0) + Number(cutBtn.dataset.cut));
+    } else if (qtyBtn) {
+      const id = qtyBtn.dataset.item;
+      const sel = selections[id];
+      if (sel) sel.qty = Math.max(1, (sel.qty || 1) + Number(qtyBtn.dataset.qty));
+    } else return;
+
+    renderOptions();
+    renderSummary();
+  });
+
+  document.getElementById('urgent-check').addEventListener('change', renderSummary);
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTab = btn.dataset.tab;
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderOptions();
+      renderSummary();
+    });
+  });
+
+  function copyQuote() {
+    const lines = [];
+    data.forEach(cat => cat.items.forEach(item => {
+      const sel = selections[item.id];
+      if (!sel) return;
+      let price;
+      if (item.baseCuts !== undefined) {
+        const extra = sel.extraCuts || 0;
+        price = basePrice(item, sel) + extra * CUT_PRICE;
+        lines.push(`${item.name} [${item.tierLabels[sel.tier || 0]}] (총 ${item.baseCuts + extra}컷) — ${fmt(price)}`);
+      } else if (item.ratio) {
+        lines.push(`${item.name} — ${fmt(videoSubtotal() * item.ratio)}`);
+      } else {
+        const q = sel.qty || 1;
+        lines.push(`${item.name} × ${q} — ${fmt(item.price * q)}`);
+      }
+    }));
+    if (lines.length === 0) { showToast('영상 길이를 먼저 선택해주세요'); return; }
+
+    const urgent = document.getElementById('urgent-check').checked;
+    const text = [
+      '[WONWORKS 숏폼 견적]',
+      ...lines,
+      urgent ? '긴급 진행 (+50%) 적용' : null,
+      '━━━━━━━━━━━━━━',
+      `Total (VAT 포함): ${document.getElementById('total').textContent}원`,
+    ].filter(Boolean).join('\n');
+
+    navigator.clipboard.writeText(text).then(() => showToast('견적 내용이 복사되었어요 ✓'));
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  renderOptions();
+  renderSummary();
+</script>
+</body>
+</html>
